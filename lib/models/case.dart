@@ -14,21 +14,21 @@ class Case {
 		required this.form,
 		required this.status,
 		required this.description,
-		required this.history,
+		required this.events,
 	});
 
 	
 	//make case from json
-	factory Case.fromJson(Map<String, String> json) {
-		final case = json['case_status'];
+	factory Case.fromJson(Map<String, dynamic> json) {
+		final newCase = json['case_status'];
 		
 		return Case(
-			receipt: case['receiptNumber'],
-			form: case['formType'],
-			status: case['current_case_status_text_en'],
-			description: case['current_case_status_desc_en'],
+			receipt: newCase['receiptNumber'],
+			form: newCase['formType'],
+			status: newCase['current_case_status_text_en'],
+			description: newCase['current_case_status_desc_en'],
 			
-			events: (case['hist_case_status'] as List? ?? [])
+			events: (newCase['hist_case_status'] as List? ?? [])
 				.map((e) => Event.fromJson(e))
 				.toList()		
 		);

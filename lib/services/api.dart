@@ -13,8 +13,8 @@ class Api {
 		
 		// token persists
 		if(_token != null &&
-		DateTime.now().isBefore(_expires??DateTime.now()) {
-			return _token; 
+		DateTime.now().isBefore(_expires??DateTime.now())) {
+			return _token!; 
 		}
 
 		final res = await http.post(Uri.parse(dotenv.env['USCIS_TOKEN_URL']!),
@@ -28,9 +28,9 @@ class Api {
 		final expiry = int.parse(data['expires_in'].toString()); //in seconds
 				
 		_token = data['access_token'];
-		_expires = DateTime.now().add(Duration(seconds: expiry);
+		_expires = DateTime.now().add(Duration(seconds: expiry));
 
-		return _token;
+		return _token!;
 	}
 
 	Future<Case> getCase(String receipt) async {
@@ -41,3 +41,4 @@ class Api {
 
 		return Case.fromJson(jsonDecode(res.body));
 	}
+}

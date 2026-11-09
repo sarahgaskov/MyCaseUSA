@@ -5,7 +5,7 @@ class TestPage extends StatefulWidget {
 	const TestPage({super.key});
 
 	@override
-	State<TestPage> createState => TestPageState();
+	State<TestPage> createState() => TestPageState();
 }
 
 class TestPageState extends State<TestPage>{
@@ -14,10 +14,10 @@ class TestPageState extends State<TestPage>{
 	
 	//test fetch
 	Future<void> fetch() async {
-		final case = await api.getCase('EAC9999103403');
+		final newCase = await api.getCase('EAC9999103403');
 
-		setState(() => {
-			info = '${case.form}: ${case.status}');
+		setState(() {
+			info = '${newCase.form}: ${newCase.status}';
 		});
 	}
 	
@@ -29,6 +29,8 @@ class TestPageState extends State<TestPage>{
 			
 			body: Center(
 				child: Column(
+					mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
 					children: [
 						Text(info),
 						FloatingActionButton(
