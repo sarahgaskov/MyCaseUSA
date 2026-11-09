@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../models/case.dart';
 
 // instance is a temporary persistent connection
-class UscisApi {
+class Api {
 	String? _token;
 	DateTime? _expires;
 
@@ -24,8 +24,8 @@ class UscisApi {
 			'client_secret':dotenv.env['USCIS_CLIENT_SECRET']!
 		});
 
-		const data = jsonDecode(res.body);
-		const expiry = int.parse(data['expires_in'].toString()); //in seconds
+		final data = jsonDecode(res.body);
+		final expiry = int.parse(data['expires_in'].toString()); //in seconds
 				
 		_token = data['access_token'];
 		_expires = DateTime.now().add(Duration(seconds: expiry);
@@ -34,11 +34,10 @@ class UscisApi {
 	}
 
 	Future<Case> getCase(String receipt) async {
-		const token = await _getToken();
+		final token = await _getToken();
 		
 		final res = await http.get(Uri.parse('${dotenv.env['USCIS_CASE_STATUS_URL']}/$receipt'),
-		headers: {'Authorization':'Bearer $token'}
-		);
+		headers: {'Authorization':'Bearer $token'});
 
 		return Case.fromJson(jsonDecode(res.body));
 	}
