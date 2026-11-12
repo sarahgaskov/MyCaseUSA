@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api.dart';
 import '../models/case.dart';
 import '../widgets/popups.dart';
+import '../widgets/refresh_list.dart';
 import 'case_details.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -118,19 +119,7 @@ class DashboardPageState extends State<DashboardPage>{
                 
             );
         } else {
-            return RefreshIndicator(
-                onRefresh: refresh,
-                child: ListView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
-
-                    itemCount: cases.length,
-                    itemBuilder: (context, index) {
-                        final Case entry = cases[index];
-
-                        return caseCard(entry);
-                    }
-                )
-            );
+            return refreshList(refresh, setCases.values.map(caseCard).toList());
         }
 
         
@@ -144,7 +133,7 @@ class DashboardPageState extends State<DashboardPage>{
                 title: Text(linkedCase.form),
                 subtitle: Text(linkedCase.status),
                 onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const CaseDetailsPage()),
+                    MaterialPageRoute(builder: (context) => CaseDetailsPage(onRefresh: refresh)),
                 ),
             ),
         );
