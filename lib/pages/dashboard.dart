@@ -33,7 +33,7 @@ class DashboardPageState extends State<DashboardPage>{
                 actions: [
                     IconButton(
                         icon: const Icon(Icons.refresh),
-                        onPressed: () => _refreshing ? null : refresh,
+                        onPressed: _refreshing ? null : refresh,
                     )
                 ]
             ),
