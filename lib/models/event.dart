@@ -6,7 +6,7 @@ class Event {
 
 	//factory for making events from json
 	factory Event.fromJson(Map<String, dynamic> json) => Event(
-		date: json['date'],
-		text: json['completed_text_en']
+		date: json['date'] ?? '',
+		text: json['completed_text_en'] ?? ''
 	);
 }

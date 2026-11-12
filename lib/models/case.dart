@@ -23,10 +23,10 @@ class Case {
 		final newCase = json['case_status'];
 		
 		return Case(
-			receipt: newCase['receiptNumber'],
-			form: newCase['formType'],
-			status: newCase['current_case_status_text_en'],
-			description: newCase['current_case_status_desc_en'],
+			receipt: newCase['receiptNumber'] ?? '',
+			form: newCase['formType'] ?? '',
+			status: newCase['current_case_status_text_en'] ?? '',
+			description: newCase['current_case_status_desc_en'] ?? '',
 			
 			events: (newCase['hist_case_status'] as List? ?? [])
 				.map((e) => Event.fromJson(e))
