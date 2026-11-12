@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api.dart';
 import '../models/case.dart';
 import '../widgets/popups.dart';
+import 'case_details.dart';
 
 class DashboardPage extends StatefulWidget {
 	const DashboardPage({super.key});
@@ -12,7 +13,17 @@ class DashboardPage extends StatefulWidget {
 
 class DashboardPageState extends State<DashboardPage>{
 	final api = Api();
-	final Map<String, Case> cases = {};
+
+    //todo remove temporary test
+	final Map<String, Case> cases = {
+		'TEST0000000001': const Case(
+			receipt: 'TEST0000000001',
+			form: 'I-130',
+			status: 'Case Was Received',
+			description: '',
+			events: [],
+		),
+	};
 
     //TODO: add "String receipt" arg
     Future<void> addCase(String receipt) async {
@@ -132,6 +143,9 @@ class DashboardPageState extends State<DashboardPage>{
             child: ListTile(
                 title: Text(linkedCase.form),
                 subtitle: Text(linkedCase.status),
+                onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const CaseDetailsPage()),
+                ),
             ),
         );
     }
