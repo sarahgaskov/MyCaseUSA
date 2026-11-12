@@ -15,9 +15,9 @@ class DashboardPageState extends State<DashboardPage>{
 	final Map<String, Case> cases = {};
 
     //TODO: add "String receipt" arg
-    Future<void> addCase() async {
-        //final newCase = await api.getCase(receipt);
-        final newCase = await api.getCase('EAC9999103403');
+    Future<void> addCase(String receipt) async {
+        final newCase = await api.getCase(receipt);
+        //final newCase = await api.getCase('EAC9999103403');
 
         //TODO: check if even valid case/receipt -- in api.dart
         // fail if no case imported
@@ -42,7 +42,15 @@ class DashboardPageState extends State<DashboardPage>{
 			body: caseListView(cases),
 
 			floatingActionButton: FloatingActionButton.extended(
-                onPressed: addCase,
+                onPressed: () {
+                    addCase(
+                        showInputPopup(context,
+                            "Add case",
+                            "Type in case receipt number"
+                        ) ?? ""
+                    );
+                    
+                },
                 icon: const Icon(Icons.add),
                 label: const Text('Add case'),
             ),
