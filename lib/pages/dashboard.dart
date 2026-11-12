@@ -42,14 +42,19 @@ class DashboardPageState extends State<DashboardPage>{
 			body: caseListView(cases),
 
 			floatingActionButton: FloatingActionButton.extended(
-                onPressed: () {
-                    addCase(
-                        showInputPopup(context,
-                            "Add case",
-                            "Type in case receipt number"
-                        ) ?? ""
+                onPressed: () async {
+                    final receipt = await showInputPopup(context,
+                        "Add case",
+                        "Receipt number"
                     );
+
+                    if(receipt != null) {
+                        addCase(
+                            receipt.trim().toUpperCase()
+                        );
+                    }
                     
+                    return;
                 },
                 icon: const Icon(Icons.add),
                 label: const Text('Add case'),
