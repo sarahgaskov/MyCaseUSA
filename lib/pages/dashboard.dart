@@ -81,20 +81,35 @@ class DashboardPageState extends State<DashboardPage>{
     Widget caseListView(Map<String, Case> setCases) {
         final List<dynamic> cases = setCases.values.toList() ?? [];
 
-        return RefreshIndicator(
-            key: _refreshKey,
-            onRefresh: refresh,
-            child: ListView.builder(
-                physics: const AlwaysScrollableScrollPhysics(),
+        // if list is empty then dont show case, theres nothing to show
 
-                itemCount: cases.length,
-                itemBuilder: (context, index) {
-                    final Case entry = cases[index];
+        if(cases.isEmpty){
+            return Center(
+                child: Text('No cases added',
+                    style: TextStyle(
+                        color: Colors.grey,
+                    ),
+                ),
+                
+            );
+        } else {
+            return RefreshIndicator(
+                key: _refreshKey,
+                onRefresh: refresh,
+                child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
 
-                    caseCard(entry);
-                }
-            )
-        );
+                    itemCount: cases.length,
+                    itemBuilder: (context, index) {
+                        final Case entry = cases[index];
+
+                        caseCard(entry);
+                    }
+                )
+            );
+        }
+
+        
     }
 
 
