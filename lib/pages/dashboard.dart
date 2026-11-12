@@ -33,7 +33,7 @@ class DashboardPageState extends State<DashboardPage>{
                 actions: [
                     IconButton(
                         icon: const Icon(Icons.refresh),
-                        onPressed: () => _refreshKey.currentState?.show(),
+                        onPressed: () => _refreshing ? null : refresh,
                     )
                 ]
             ),
@@ -50,7 +50,6 @@ class DashboardPageState extends State<DashboardPage>{
     
     // refreshing
 
-    final _refreshKey = GlobalKey<RefreshIndicatorState>();
     bool _refreshing = false;
 
     Future<void> refresh() async{
@@ -60,19 +59,18 @@ class DashboardPageState extends State<DashboardPage>{
         final updated = <String, Case>{};
         //TODO: add failed too
 
-        for (var receipt in updated.keys.toList()) {
+        for (var receipt in cases.keys.toList()) {
             try {
                 updated[receipt] = await api.getCase(receipt);
             } catch(e) {
                 //TODO: handle later
             }
-
-            _refreshing = false;
-
-            setState(() {
-                cases.addAll(updated);
-            });
         }
+
+        setState(() {
+            _refreshing = false;
+            cases.addAll(updated);
+        });
     }
 
     // Widgets
@@ -94,7 +92,6 @@ class DashboardPageState extends State<DashboardPage>{
             );
         } else {
             return RefreshIndicator(
-                key: _refreshKey,
                 onRefresh: refresh,
                 child: ListView.builder(
                     physics: const AlwaysScrollableScrollPhysics(),
@@ -103,7 +100,7 @@ class DashboardPageState extends State<DashboardPage>{
                     itemBuilder: (context, index) {
                         final Case entry = cases[index];
 
-                        caseCard(entry);
+                        return caseCard(entry);
                     }
                 )
             );
