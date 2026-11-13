@@ -5,6 +5,7 @@ import '../models/event.dart';
 import '../widgets/popups.dart';
 import '../widgets/refresh_list.dart';
 import 'case_details.dart';
+import 'case_edit.dart';
 
 class DashboardPage extends StatefulWidget {
 	const DashboardPage({super.key});
@@ -145,6 +146,13 @@ class DashboardPageState extends State<DashboardPage>{
             child: ListTile(
                 title: Text(linkedCase.form),
                 subtitle: Text(linkedCase.status),
+                trailing: IconButton(
+                    icon: const Icon(Icons.edit),
+                    tooltip: 'Edit case',
+                    onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => CaseEditPage(linkedCase: linkedCase)),
+                    ),
+                ),
                 onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => CaseDetailsPage(linkedCase: linkedCase, onRefresh: refresh)),
                 ),
