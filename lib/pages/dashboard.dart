@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api.dart';
 import '../models/case.dart';
+import '../models/event.dart';
 import '../widgets/popups.dart';
 import '../widgets/refresh_list.dart';
 import 'case_details.dart';
@@ -17,12 +18,16 @@ class DashboardPageState extends State<DashboardPage>{
 
     //todo remove temporary test
 	final Map<String, Case> cases = {
-		'TEST0000000001': const Case(
+		'TEST0000000001': Case(
 			receipt: 'TEST0000000001',
 			form: 'I-130',
 			status: 'Case Was Received',
 			description: '',
-			events: [],
+			events: [
+				Event(date: '2026-11-10', text: 'Case Was Received'),
+				Event(date: '2026-11-05', text: 'Fees Were Paid'),
+				Event(date: '2026-11-01', text: 'Case Was Filed'),
+			],
 		),
 	};
 
@@ -133,7 +138,7 @@ class DashboardPageState extends State<DashboardPage>{
                 title: Text(linkedCase.form),
                 subtitle: Text(linkedCase.status),
                 onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => CaseDetailsPage(onRefresh: refresh)),
+                    MaterialPageRoute(builder: (context) => CaseDetailsPage(linkedCase: linkedCase, onRefresh: refresh)),
                 ),
             ),
         );
