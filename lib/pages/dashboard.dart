@@ -51,7 +51,13 @@ class DashboardPageState extends State<DashboardPage>{
                 title: const Text('MyCaseUSA'),
                 actions: [
                     IconButton(
-                        icon: const Icon(Icons.refresh),
+                        icon: _refreshing
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                            ) : const Icon(Icons.refresh),
+
                         onPressed: _refreshing ? null : refresh,
                     )
                 ]
@@ -86,7 +92,8 @@ class DashboardPageState extends State<DashboardPage>{
 
     Future<void> refresh() async{
         if (_refreshing || cases.isEmpty) { return; }
-        _refreshing = true;
+
+        setState(() { _refreshing = true; });
 
         final updated = <String, Case>{};
         //TODO: add failed too
@@ -139,7 +146,11 @@ class DashboardPageState extends State<DashboardPage>{
                 title: Text(linkedCase.form),
                 subtitle: Text(linkedCase.status),
                 onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => CaseDetailsPage(linkedCase: linkedCase, onRefresh: refresh)),
+                    MaterialPageRoute(builder: (context) => CaseDetailsPage(
+                        receipt: linkedCase.receipt,
+                        lookupCase: (receipt) => cases[receipt],
+                        onRefresh: refresh,
+                    )),
                 ),
             ),
         );
