@@ -146,11 +146,7 @@ class DashboardPageState extends State<DashboardPage>{
                 title: Text(linkedCase.form),
                 subtitle: Text(linkedCase.status),
                 onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => CaseDetailsPage(
-                        receipt: linkedCase.receipt,
-                        lookupCase: (receipt) => cases[receipt],
-                        onRefresh: refresh,
-                    )),
+                    MaterialPageRoute(builder: (context) => CaseDetailsPage(linkedCase: linkedCase, onRefresh: refresh)),
                 ),
             ),
         );
