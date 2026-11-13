@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import '../models/case.dart';
 import '../models/event.dart';
 import '../widgets/refresh_list.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class CaseDetailsPage extends StatelessWidget {
     final Case linkedCase;
@@ -92,7 +95,13 @@ class CaseDetailsPage extends StatelessWidget {
  
                         if (description.isNotEmpty) ...[
                             SizedBox(height: 8),
-                            Text(description),
+                            HtmlWidget(
+                                description,
+                                onTapUrl: (url) => launchUrl(
+                                    Uri.parse(url),
+                                    mode: LaunchMode.externalApplication,
+                                ),
+                            ),
                         ],
                     ],
                 ),

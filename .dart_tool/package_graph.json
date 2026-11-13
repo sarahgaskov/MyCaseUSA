@@ -10,6 +10,7 @@
         "cupertino_icons",
         "flutter",
         "flutter_dotenv",
+        "flutter_widget_from_html_core",
         "http",
         "path",
         "sqflite",
@@ -43,6 +44,16 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "flutter_widget_from_html_core",
+      "version": "0.17.4",
+      "dependencies": [
+        "csslib",
+        "flutter",
+        "html",
+        "logging"
       ]
     },
     {
@@ -424,6 +435,26 @@
       "name": "vm_service",
       "version": "15.4.0",
       "dependencies": []
+    },
+    {
+      "name": "csslib",
+      "version": "1.0.2",
+      "dependencies": [
+        "source_span"
+      ]
+    },
+    {
+      "name": "logging",
+      "version": "1.3.0",
+      "dependencies": []
+    },
+    {
+      "name": "html",
+      "version": "0.15.7",
+      "dependencies": [
+        "csslib",
+        "source_span"
+      ]
     }
   ],
   "configVersion": 1

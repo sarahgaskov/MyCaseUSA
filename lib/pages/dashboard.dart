@@ -22,7 +22,8 @@ class DashboardPageState extends State<DashboardPage>{
 			receipt: 'TEST0000000001',
 			form: 'I-130',
 			status: 'Case Was Received',
-			description: '',
+			description: 'On November 10, 2026, we received your Form I-130, Petition for Alien Relative, Receipt Number TEST0000000001, and sent you the receipt notice that describes how we will process your case. Please follow the instructions in the notice. If you have any questions, contact the USCIS Contact Center. If you move, go to <a href="https://www.uscis.gov/addresschange" target="_blank">www.uscis.gov/addresschange</a> to give us your new mailing address.',
+			updated: '11-10-2026 09:15:32',
 			events: [
 				Event(date: '2026-11-10', text: 'Case Was Received'),
 				Event(date: '2026-11-05', text: 'Fees Were Paid'),
