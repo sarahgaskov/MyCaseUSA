@@ -14,11 +14,7 @@ class CaseDetailsPage extends StatelessWidget {
         final events = linkedCase.events;
 
         final List<Widget> sections = [
-            Padding(
-                padding: EdgeInsets.all(16),
-                child: Text('Case Events', style: TextStyle(fontSize: 18)),
-            ),
-            eventsBox(events),
+            ...eventSection(events)
         ];
 
         return Scaffold(
@@ -28,8 +24,16 @@ class CaseDetailsPage extends StatelessWidget {
     }
 
     // sections
-
-        //TODO: make a section that has both title and card
+    
+    List<Widget> eventSection(events) {
+        return [
+            Padding(
+                padding: EdgeInsets.all(16),
+                child: Text('Case Events', style: TextStyle(fontSize: 18)),
+            ),
+            eventsBox(events),
+        ];
+    }
 
     Card eventsBox(events) {
         if (events.isEmpty) {
@@ -40,7 +44,7 @@ class CaseDetailsPage extends StatelessWidget {
                 child: ExpansionTile(
                     title: Text(events.first.text),
                     subtitle: Text(events.first.date),
-                    children: [eventList(events)],
+                    children: [eventList(events.skip(1).toList())],
                 ),
             );
         }
