@@ -33,6 +33,16 @@ class DashboardPageState extends State<DashboardPage>{
 		),
 	};
 
+    //todo remove temporary test
+    final Map<String, Map<String, String>> casePersonal = {
+        'TEST0000000001': newCasePersonal(),
+    };
+
+    // every case gets all personal fields
+    static Map<String, String> newCasePersonal() => {
+        'nickname': '',
+    };
+
     //TODO: add "String receipt" arg
     Future<void> addCase(String receipt) async {
         final newCase = await api.getCase(receipt);
@@ -42,6 +52,7 @@ class DashboardPageState extends State<DashboardPage>{
         // fail if no case imported
 		setState(() {
 			cases[newCase.receipt] = newCase;
+			casePersonal[newCase.receipt] ??= newCasePersonal();
 		});
     }
 
@@ -141,20 +152,25 @@ class DashboardPageState extends State<DashboardPage>{
 
 
     Card caseCard(Case linkedCase) {
+        final nickname = casePersonal[linkedCase.receipt]!['nickname']!;
+
         return Card(
             elevation: 1,
             child: ListTile(
-                title: Text(linkedCase.form),
+                title: Text(nickname.isEmpty ? linkedCase.form : nickname),
                 subtitle: Text(linkedCase.status),
                 trailing: IconButton(
                     icon: const Icon(Icons.edit),
                     tooltip: 'Edit case',
-                    onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => CaseEditPage(linkedCase: linkedCase)),
-                    ),
+                    onPressed: () async {
+                        await Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => CaseEditPage(linkedCase: linkedCase, casePersonal: casePersonal[linkedCase.receipt]!)),
+                        );
+                        setState(() {});
+                    },
                 ),
                 onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => CaseDetailsPage(linkedCase: linkedCase, onRefresh: refresh)),
+                    MaterialPageRoute(builder: (context) => CaseDetailsPage(linkedCase: linkedCase, casePersonal: casePersonal[linkedCase.receipt]!, onRefresh: refresh)),
                 ),
             ),
         );

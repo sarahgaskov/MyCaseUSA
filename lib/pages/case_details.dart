@@ -9,16 +9,17 @@ import 'package:url_launcher/url_launcher.dart';
 
 class CaseDetailsPage extends StatelessWidget {
     final Case linkedCase;
+    final Map<String, String> casePersonal;
     final Future<void> Function() onRefresh;
 
-    const CaseDetailsPage({super.key, required this.linkedCase, required this.onRefresh});
+    const CaseDetailsPage({super.key, required this.linkedCase, required this.casePersonal, required this.onRefresh});
 
     @override
     Widget build(BuildContext context) {
         final events = linkedCase.events;
 
         final List<Widget> sections = [
-            formCard(linkedCase.receipt, linkedCase.form),
+            formCard(linkedCase.receipt, linkedCase.form, casePersonal['nickname']!),
             ...statusSection(linkedCase.status, linkedCase.updated, linkedCase.description),
             ...eventSection(events)
         ];
@@ -45,7 +46,7 @@ class CaseDetailsPage extends StatelessWidget {
 
     // 1 - form section
 
-    Card formCard(receipt, form) {
+    Card formCard(String receipt, String form, String nickname) {
         return Card(
             elevation: 1,
             child: ListTile(
@@ -57,7 +58,7 @@ class CaseDetailsPage extends StatelessWidget {
                     Icon(Icons.copy, size: 16, color: Colors.grey)
                 ]),
 
-                subtitle: Text(form),
+                subtitle: Text(nickname.isEmpty ? form : '$form ($nickname)'),
                 onTap: () async {await Clipboard.setData(ClipboardData(text: receipt));}
             ),
         );
