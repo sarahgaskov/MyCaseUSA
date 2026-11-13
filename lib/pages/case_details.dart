@@ -16,6 +16,7 @@ class CaseDetailsPage extends StatelessWidget {
 
         final List<Widget> sections = [
             formCard(linkedCase.receipt, linkedCase.form),
+            ...statusSection(linkedCase.status, linkedCase.updated, linkedCase.description),
             ...eventSection(events)
         ];
 
@@ -58,9 +59,49 @@ class CaseDetailsPage extends StatelessWidget {
             ),
         );
     }
-
-    // 2 - event section
-    
+ 
+    // 2 - status section
+ 
+    List<Widget> statusSection(status, updated, description) {
+        return [
+            sectionTitle('Status'),
+            statusCard(status, updated, description),
+        ];
+    }
+ 
+    Card statusCard(String status, String updated, String description) {
+        return Card(
+            elevation: 1,
+            child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                        if (updated.isNotEmpty)
+                            Text('Case updated: $updated', style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                            )),
+ 
+                        SizedBox(height: 4),
+ 
+                        Text(status.isEmpty ? 'No status' : status, style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                        )),
+ 
+                        if (description.isNotEmpty) ...[
+                            SizedBox(height: 8),
+                            Text(description),
+                        ],
+                    ],
+                ),
+            ),
+        );
+    }
+ 
+    // 3 - event section
+ 
     List<Widget> eventSection(events) {
         return [
             sectionTitle('Case Events'),
@@ -125,3 +166,4 @@ class CaseDetailsPage extends StatelessWidget {
         );
     }
 }
+ 
