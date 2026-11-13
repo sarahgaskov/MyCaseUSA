@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/case.dart';
 import '../models/event.dart';
 import '../widgets/refresh_list.dart';
@@ -14,6 +15,7 @@ class CaseDetailsPage extends StatelessWidget {
         final events = linkedCase.events;
 
         final List<Widget> sections = [
+            formCard(linkedCase.receipt, linkedCase.form),
             ...eventSection(events)
         ];
 
@@ -24,18 +26,49 @@ class CaseDetailsPage extends StatelessWidget {
     }
 
     // sections
+
+    Widget sectionTitle(String title, [String description = '']) { //TODO: Add description
+        return Padding (
+            padding: EdgeInsets.only(top: 16.0, bottom: 8.0, left: 8.0, right: 8.0),
+            child: Text(title, style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold
+            )),
+        );
+    }
+
+
+
+    // 1 - form section
+
+    Card formCard(receipt, form) {
+        return Card(
+            elevation: 1,
+            child: ListTile(
+                title: Row(children: [
+                    Text(receipt + " ", style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                    )),
+
+                    Icon(Icons.copy, size: 16, color: Colors.grey)
+                ]),
+
+                subtitle: Text(form),
+                onTap: () async {await Clipboard.setData(ClipboardData(text: receipt));}
+            ),
+        );
+    }
+
+    // 2 - event section
     
     List<Widget> eventSection(events) {
         return [
-            Padding(
-                padding: EdgeInsets.all(16),
-                child: Text('Case Events', style: TextStyle(fontSize: 18)),
-            ),
-            eventsBox(events),
+            sectionTitle('Case Events'),
+            eventsCard(events),
         ];
     }
 
-    Card eventsBox(events) {
+    Card eventsCard(events) {
         if (events.isEmpty) {
             return Card(child: ListTile(title: Text('No events')));
         } else {
