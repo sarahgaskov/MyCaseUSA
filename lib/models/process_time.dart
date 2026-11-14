@@ -17,14 +17,13 @@ class ProcessTime {
 
     //make processing time from json
 	factory ProcessTime.fromJson(Map<String, dynamic> json) {
-        final newTime = json['offices'];
-
+        
 		return ProcessTime(
-			office: newTime['office_code'] ?? '',
-			category: newTime['subtype'] ?? '',
-			lowerMonths: newTime['lower_months'] as double ?? 0.0,
-			upperMonths: newTime['upper_months'] as double ?? 0.0,
-			fileDate: newTime['service_request_date'] ?? '',
+			office: json['office_code'] ?? '',
+			category: json['subtype'] ?? '',
+			lowerMonths: (json['lower_months'] as num? ?? 0).toDouble(),
+			upperMonths: (json['upper_months'] as num? ?? 0).toDouble(),
+			fileDate: json['service_request_date'] ?? '',
 		);
 	}
 }

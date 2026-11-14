@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import '../models/case.dart';
+import '../models/process_time.dart';
 
 // instance is a temporary persistent connection
 class Api {
@@ -48,8 +49,8 @@ class Api {
 
 		if(data['status'] == 'ok') {
 
-			return(data as List ?? [])
-				.map((e) => ProcessingTime.fromJson(e)).toList();
+			return(data['offices'] as List? ?? [])
+				.map((e) => ProcessTime.fromJson(e)).toList();
 
 		} else {
 			return [];
