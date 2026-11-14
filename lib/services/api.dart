@@ -41,4 +41,18 @@ class Api {
 
 		return Case.fromJson(jsonDecode(res.body));
 	}
+
+	Future<List<ProcessTime>> getProcTimes(String form) async{
+		final res = await http.get(Uri.parse('https://immigrationtimes.org/api/v1/${form.toLowerCase()}.json'));
+		final data = jsonDecode(res.body);
+
+		if(data['status'] == 'ok') {
+
+			return(data as List ?? [])
+				.map((e) => ProcessingTime.fromJson(e)).toList();
+
+		} else {
+			return [];
+		}
+	}
 }

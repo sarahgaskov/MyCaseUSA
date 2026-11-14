@@ -41,6 +41,8 @@ class DashboardPageState extends State<DashboardPage>{
     // every case gets all personal fields
     static Map<String, String> newCasePersonal() => {
         'nickname': '',
+        'category': '',
+        'office': '',
     };
 
     //TODO: add "String receipt" arg

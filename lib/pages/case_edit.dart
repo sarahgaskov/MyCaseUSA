@@ -3,6 +3,8 @@ import '../models/case.dart';
 
 const Map<String, String> titles = {
     'nickname': 'Nickname',
+    'category': 'Case Category',
+    'office': 'Field Office',
 };
 
 class CaseEditPage extends StatelessWidget {
