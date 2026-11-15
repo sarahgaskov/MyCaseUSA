@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api.dart';
 import '../models/case.dart';
 import '../models/event.dart';
@@ -6,6 +8,7 @@ import '../widgets/popups.dart';
 import '../widgets/refresh_list.dart';
 import 'case_details.dart';
 import 'case_edit.dart';
+import 'settings.dart';
 
 class DashboardPage extends StatefulWidget {
 	const DashboardPage({super.key});
@@ -47,15 +50,49 @@ class DashboardPageState extends State<DashboardPage>{
 
     //TODO: add "String receipt" arg
     Future<void> addCase(String receipt) async {
-        final newCase = await api.getCase(receipt);
-        //final newCase = await api.getCase('EAC9999103403');
+        final prefs = await SharedPreferences.getInstance();
+        final receipts = prefs.getStringList('receipts') ?? [];
 
         //TODO: check if even valid case/receipt -- in api.dart
-        // fail if no case imported
-		setState(() {
-			cases[newCase.receipt] = newCase;
-			casePersonal[newCase.receipt] ??= newCasePersonal();
-		});
+        if (!receipts.contains(receipt)) {
+            final newReceipts = [...receipts, receipt];
+            await prefs.setStringList('receipts', newReceipts);
+        }
+
+        await refresh(); //so that the new cases are pulled
+    }
+
+    @override
+    void initState() {
+        super.initState();
+        loadCases();
+    }
+
+    Future<void> loadCases() async {
+        final prefs = await SharedPreferences.getInstance();
+        final personal = jsonDecode(prefs.getString('personal') ?? '{}');
+
+        for (final attribute in personal.entries) {
+            casePersonal[attribute.key] = attribute.value;
+        }
+
+        await refresh();
+    }
+
+    Future<void> savePersonal() async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('personal', jsonEncode(casePersonal));
+    }
+
+    Future<void> clearData() async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('receipts');
+        await prefs.remove('personal');
+
+        setState(() {
+            cases.clear();
+            casePersonal.clear();
+        });
     }
 
 	@override
@@ -73,7 +110,16 @@ class DashboardPageState extends State<DashboardPage>{
                             ) : const Icon(Icons.refresh),
 
                         onPressed: _refreshing ? null : refresh,
-                    )
+                    ),
+                    IconButton(
+                        icon: const Icon(Icons.settings),
+                        tooltip: 'Settings',
+                        onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => SettingsPage(
+                                onClear: clearData,
+                            )),
+                        ),
+                    ),
                 ]
             ),
 			
@@ -105,14 +151,17 @@ class DashboardPageState extends State<DashboardPage>{
     bool _refreshing = false;
 
     Future<void> refresh() async{
-        if (_refreshing || cases.isEmpty) { return; }
+        final prefs = await SharedPreferences.getInstance();
+        final receipts = prefs.getStringList('receipts') ?? [];
+
+        if (_refreshing || receipts.isEmpty) { return; }
 
         setState(() { _refreshing = true; });
 
         final updated = <String, Case>{};
         //TODO: add failed too
 
-        for (var receipt in cases.keys.toList()) {
+        for (var receipt in receipts) {
             try {
                 updated[receipt] = await api.getCase(receipt);
             } catch(e) {
@@ -123,6 +172,9 @@ class DashboardPageState extends State<DashboardPage>{
         setState(() {
             _refreshing = false;
             cases.addAll(updated);
+            for (var receipt in updated.keys) {
+                casePersonal[receipt] ??= newCasePersonal();
+            }
         });
     }
 
@@ -168,6 +220,7 @@ class DashboardPageState extends State<DashboardPage>{
                         await Navigator.of(context).push(
                             MaterialPageRoute(builder: (context) => CaseEditPage(linkedCase: linkedCase, casePersonal: casePersonal[linkedCase.receipt]!)),
                         );
+                        await savePersonal();
                         setState(() {});
                     },
                 ),
