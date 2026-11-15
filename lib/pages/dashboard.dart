@@ -69,19 +69,17 @@ class DashboardPageState extends State<DashboardPage>{
     }
 
     Future<void> loadCases() async {
+        await loadPersonal();
+        await refresh();
+    }
+
+    Future<void> loadPersonal() async {
         final prefs = await SharedPreferences.getInstance();
         final personal = jsonDecode(prefs.getString('personal') ?? '{}');
 
         for (final attribute in personal.entries) {
-            casePersonal[attribute.key] = attribute.value;
+            casePersonal[attribute.key] = Map<String, String>.from(attribute.value);
         }
-
-        await refresh();
-    }
-
-    Future<void> savePersonal() async {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('personal', jsonEncode(casePersonal));
     }
 
     Future<void> clearData() async {
@@ -218,9 +216,9 @@ class DashboardPageState extends State<DashboardPage>{
                     tooltip: 'Edit case',
                     onPressed: () async {
                         await Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => CaseEditPage(linkedCase: linkedCase, casePersonal: casePersonal[linkedCase.receipt]!)),
+                            MaterialPageRoute(builder: (context) => CaseEditPage(linkedCase: linkedCase)),
                         );
-                        await savePersonal();
+                        await loadPersonal();
                         setState(() {});
                     },
                 ),

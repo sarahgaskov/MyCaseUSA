@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/case.dart';
 import '../models/process_time.dart';
 import '../services/api.dart';
 import '../data/detailed_names.dart';
+import 'dashboard.dart';
 
 const Map<String, String> titles = {
     'nickname': 'Nickname',
@@ -12,9 +15,8 @@ const Map<String, String> titles = {
 
 class CaseEditPage extends StatefulWidget {
     final Case linkedCase;
-    final Map<String, String> casePersonal;
 
-    const CaseEditPage({super.key, required this.linkedCase, required this.casePersonal});
+    const CaseEditPage({super.key, required this.linkedCase});
 
     @override
     State<CaseEditPage> createState() => CaseEditPageState();
@@ -22,20 +24,40 @@ class CaseEditPage extends StatefulWidget {
 
 class CaseEditPageState extends State<CaseEditPage> {
     late final linkedCase = widget.linkedCase;
-    late final casePersonal = widget.casePersonal;
+    Map<String, String>? tempPersonal;
 
     Future<List<ProcessTime>> getTimes() => Api().getProcTimes(linkedCase.form);
 
     List<ProcessTime>? timeList; // null while loading
     // contains now just time info but also office and category info
 
-    late String category = casePersonal['category']!; // office depends on category
-    late String office = casePersonal['office']!;
-
     @override
     void initState() {
         super.initState();
+        
         loadTimes();
+        loadPersonal();
+    }
+
+    Future<void> loadPersonal() async {
+        final prefs = await SharedPreferences.getInstance();
+
+        final personal = jsonDecode(prefs.getString('personal') ?? '{}');
+        final casePersonal = personal[linkedCase.receipt] ?? {};
+
+        setState(() {
+            final newPersonal = DashboardPageState.newCasePersonal();
+            newPersonal.addAll(casePersonal);
+            tempPersonal = newPersonal;
+        });
+    }
+
+    Future<void> savePersonal() async {
+        final prefs = await SharedPreferences.getInstance();
+        final personal = jsonDecode(prefs.getString('personal') ?? '{}');
+
+        personal[linkedCase.receipt] = tempPersonal;
+        await prefs.setString('personal', jsonEncode(personal));
     }
 
     Future<void> loadTimes() async {
@@ -50,7 +72,7 @@ class CaseEditPageState extends State<CaseEditPage> {
     Widget build(BuildContext context) {
         return Scaffold(
             appBar: AppBar(title: const Text('Edit Case')),
-            body: timeList == null ? const Center(child: CircularProgressIndicator())
+            body: timeList == null || tempPersonal == null ? const Center(child: CircularProgressIndicator())
                 : Padding(
                     padding: EdgeInsets.all(16.0),
 
@@ -58,7 +80,7 @@ class CaseEditPageState extends State<CaseEditPage> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
 
                         children:[
-                            for(final field in casePersonal.keys)
+                            for(final field in tempPersonal!.keys)
                                 Padding(
                                     padding: EdgeInsets.only(bottom: 16.0),
 
@@ -75,13 +97,13 @@ class CaseEditPageState extends State<CaseEditPage> {
                                     ),
                                 ),
 
-                            Builder(builder: (context) => ElevatedButton(
-                                onPressed: () {
-                                    Form.of(context).save();
+                            ElevatedButton(
+                                onPressed: () async {
+                                    await savePersonal();
                                     Navigator.of(context).pop();
                                 },
                                 child: const Text('Save'),
-                            )),
+                            ),
                         ],
                     )),
                 ),
@@ -97,13 +119,15 @@ class CaseEditPageState extends State<CaseEditPage> {
                 for(final time in timeList) {
                     categories[time.category] = categoryNames[time.category] ?? time.category;
                 }
-                return dropdown('category', category, categories,
+                return dropdown('category', categories,
                     (value) => setState(() {
-                        category = value ?? '';
-                        office = ''; // new categiry resets office
+                        tempPersonal!['category'] = value ?? '';
+                        tempPersonal!['office'] = ''; // new categiry resets office
                     })
                 );
             case 'office':
+                final category = tempPersonal!['category']!;
+
                 if (category.isEmpty) {
                     return Text('Pick a category first', style: TextStyle(color: Colors.grey));
                 } else {
@@ -114,20 +138,22 @@ class CaseEditPageState extends State<CaseEditPage> {
                         }
                     }
 
-                    return dropdown('office', office, offices,
-                        (value) => setState(() => office = value ?? '')
+                    return dropdown('office', offices,
+                        (value) => setState(() => tempPersonal!['office'] = value ?? '')
                     );
                 }
             default:
                 return TextFormField(
-                    initialValue: casePersonal[field],
-                    onSaved: (value) => casePersonal[field] = value!.trim(),
+                    initialValue: tempPersonal![field],
+                    onChanged: (value) => tempPersonal![field] = value.trim(),
                 );
         }
         
     }
 
-    Widget dropdown(String field, String id, Map<String, String> items, ValueChanged<String?> onChanged) {
+    Widget dropdown(String field, Map<String, String> items, ValueChanged<String?> onChanged) {
+        final id = tempPersonal![field]!;
+
         if (items.isEmpty) {
             return Text('No data for this form', style: TextStyle(color: Colors.grey));
         }
@@ -145,7 +171,6 @@ class CaseEditPageState extends State<CaseEditPage> {
             items: dropItems,
 
             onChanged: onChanged,
-            onSaved: (value) => casePersonal[field] = value ?? '',
         );
     }
 }
