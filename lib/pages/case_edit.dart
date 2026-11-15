@@ -43,7 +43,7 @@ class CaseEditPageState extends State<CaseEditPage> {
         final prefs = await SharedPreferences.getInstance();
 
         final personal = jsonDecode(prefs.getString('personal') ?? '{}');
-        final casePersonal = personal[linkedCase.receipt] ?? {};
+        final casePersonal = Map<String, String>.from(personal[linkedCase.receipt] ?? {});
 
         setState(() {
             final newPersonal = DashboardPageState.newCasePersonal();
